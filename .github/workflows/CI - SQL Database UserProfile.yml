@@ -1,0 +1,38 @@
+name: "CI - SQL Database: UserProfile"
+
+on:
+  workflow_dispatch:
+
+env:
+  AZURE_SQL_SERVER: ${{ secrets.AZURE_SQL_SERVER }}
+  AZURE_SQL_DATABASE: ${{ secrets.AZURE_SQL_DATABASE }}
+  AZURE_SQL_USERNAME: ${{ secrets.AZURE_LOGIN }}
+  AZURE_SQL_PASSWORD: ${{ secrets.AZURE_PASSWORD }}
+
+jobs:
+  build-deploy:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Build SQL Project
+        run: msbuild ./Azure/Databases/Azure.UserProfileAuth.Database/Azure.UserProfileAuth.Database.sqlproj /p:Configuration=Release
+
+      - name: Install SqlPackage
+        uses: microsoft/sqlpackage-action@v1
+
+      - name: Deploy DACPAC to Azure SQL
+        run: |
+          sqlpackage /Action:Publish \
+                     /SourceFile:"./Azure/Databases/Azure.UserProfileAuth.Database/Azure.UserProfileAuth.Database/bin/Release/YourDbProject.dacpac" \
+                     /TargetServerName:$env:AZURE_SQL_SERVER \
+                     /TargetDatabaseName:$env:AZURE_SQL_DATABASE \
+                     /TargetUser:$env:AZURE_SQL_USERNAME \
+                     /TargetPassword:$env:AZURE_SQL_PASSWORD \
+                     /p:BlockOnPossibleDataLoss=false \
+                     /p:DropObjectsNotInSource=false
