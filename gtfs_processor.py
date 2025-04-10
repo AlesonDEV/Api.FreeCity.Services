@@ -140,12 +140,12 @@ def link_shapes_to_routes(zip_ref: zipfile.ZipFile, filename: str, routes_data: 
         return False
 
 
-def process_gtfs_data_from_url() -> Optional[Tuple[List[Dict], Dict[str, List[List[float]]]]]:
+def process_gtfs_data_from_url() -> Optional[Tuple[List[Dict], Dict[str, List[List[float]]], List[Dict]]]:
     """
     Основна функція для завантаження та обробки GTFS даних.
-    Повертає кортеж (список_маршрутів, словник_шейпів) або None у разі помилки.
+    Повертає кортеж (список_маршрутів, словник_шейпів, список_зупинок) або None у разі помилки.
     """
-    logger.info("Початок процесу завантаження та обробки GTFS даних...")
+    logger.info("Початок процесу завантаження та обробки GTFS даних (включаючи зупинки)...")
     zip_file = None
     try:
         zip_file = download_gtfs_zip(GTFS_URL)
@@ -153,18 +153,19 @@ def process_gtfs_data_from_url() -> Optional[Tuple[List[Dict], Dict[str, List[Li
             raise Exception("Не вдалося завантажити або відкрити GTFS архів.")
 
         # Перевірка наявності файлів
-        required = [ROUTES_FILE, TRIPS_FILE, SHAPES_FILE]
+        required = [ROUTES_FILE, TRIPS_FILE, SHAPES_FILE, STOPS_FILE] # Додано STOPS_FILE
         available_files = zip_file.namelist()
         missing = [f for f in required if f not in available_files]
         if missing:
             raise Exception(f"В архіві відсутні необхідні файли: {', '.join(missing)}")
 
-        # Обробляємо послідовно для простоти
+        # Обробляємо послідовно
         shapes_data = parse_shapes(zip_file, SHAPES_FILE)
         routes_dict = parse_routes(zip_file, ROUTES_FILE)
+        stops_list = parse_stops(zip_file, STOPS_FILE) # Обробляємо зупинки
 
-        if shapes_data is None or routes_dict is None:
-             raise Exception("Помилка під час парсингу shapes або routes файлів.")
+        if shapes_data is None or routes_dict is None or stops_list is None:
+             raise Exception("Помилка під час парсингу shapes, routes або stops файлів.")
 
         link_success = link_shapes_to_routes(zip_file, TRIPS_FILE, routes_dict)
         if not link_success:
@@ -173,17 +174,70 @@ def process_gtfs_data_from_url() -> Optional[Tuple[List[Dict], Dict[str, List[Li
         # Готуємо фінальні дані
         final_routes_list = list(routes_dict.values())
         final_shapes_dict = shapes_data
+        final_stops_list = stops_list
 
-        logger.info("GTFS дані успішно оброблено.")
-        return final_routes_list, final_shapes_dict
+        logger.info("GTFS дані (включаючи зупинки) успішно оброблено.")
+        # Повертаємо кортеж з трьома елементами
+        return final_routes_list, final_shapes_dict, final_stops_list
 
     except Exception as e:
         logger.error(f"Загальна помилка під час обробки GTFS: {e}")
-        return None # Повертаємо None у разі будь-якої помилки
+        return None
     finally:
         if zip_file:
             zip_file.close()
             logger.info("ZIP архів закрито.")
+
+
+STOPS_FILE = 'stops.txt'
+# ... (download_gtfs_zip, parse_shapes, parse_routes, link_shapes_to_routes залишаються)
+
+def parse_stops(zip_ref: zipfile.ZipFile, filename: str) -> Optional[List[Dict]]:
+    """Розбирає stops.txt з об'єкту ZipFile."""
+    stops = []
+    logger.info(f"Обробка файлу '{filename}' з архіву...")
+    try:
+        with io.TextIOWrapper(zip_ref.open(filename, mode='r'), encoding='utf-8-sig') as infile:
+            reader = csv.DictReader(infile)
+            line_num = 1
+            for row in reader:
+                line_num += 1
+                try:
+                    # Перевіряємо наявність основних полів та координат
+                    stop_id = row.get('stop_id')
+                    stop_name = row.get('stop_name', 'Без назви')
+                    stop_lat_str = row.get('stop_lat')
+                    stop_lon_str = row.get('stop_lon')
+
+                    if not all([stop_id, stop_lat_str, stop_lon_str]):
+                        logger.warning(f"[{filename} Рядок {line_num}]: Пропуск зупинки через відсутність ID або координат: {row}")
+                        continue
+
+                    stop_lat = float(stop_lat_str)
+                    stop_lon = float(stop_lon_str)
+
+                    stops.append({
+                        "stop_id": stop_id,
+                        "stop_code": row.get('stop_code', ''),
+                        "stop_name": stop_name,
+                        "stop_desc": row.get('stop_desc', ''),
+                        "stop_lat": stop_lat,
+                        "stop_lon": stop_lon,
+                        "zone_id": row.get('zone_id', ''),
+                        "stop_url": row.get('stop_url', ''),
+                        "location_type": row.get('location_type', ''), # 0 або порожнє - зупинка/платформа, 1 - станція
+                        "parent_station": row.get('parent_station', ''),
+                        "wheelchair_boarding": row.get('wheelchair_boarding', '')
+                    })
+                except (ValueError, KeyError, TypeError) as e:
+                    logger.warning(f"[{filename} Рядок {line_num}]: Пропуск некоректного рядка зупинки: {row}. Помилка: {e}")
+                    continue
+        logger.info(f"Успішно оброблено {len(stops)} зупинок з '{filename}'.")
+        return stops
+    except Exception as e:
+        logger.error(f"Помилка під час обробки файлу '{filename}' з архіву: {e}")
+        return None
+
 
 # Можна додати тестовий запуск, якщо потрібно
 # if __name__ == "__main__":
