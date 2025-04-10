@@ -1,0 +1,39 @@
+# .dockerignore
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+env/
+*.env
+.env.*
+
+# IDE and OS specific
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Test outputs
+.pytest_cache/
+.coverage
+htmlcov/
+*.prof
+*.lprof
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
