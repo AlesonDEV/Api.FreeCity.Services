@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35806.99 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Azure.UserProfileAuth.Database", "Azure.UserProfileAuth.Database\Azure.UserProfileAuth.Database.sqlproj", "{CECEEC35-E242-4B27-8666-6B4FA78D3280}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CECEEC35-E242-4B27-8666-6B4FA78D3280}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CECEEC35-E242-4B27-8666-6B4FA78D3280}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CECEEC35-E242-4B27-8666-6B4FA78D3280}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{CECEEC35-E242-4B27-8666-6B4FA78D3280}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CECEEC35-E242-4B27-8666-6B4FA78D3280}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CECEEC35-E242-4B27-8666-6B4FA78D3280}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {485FCD23-E2AF-45EC-B4C0-63F8BF5CE388}
+	EndGlobalSection
+EndGlobal
