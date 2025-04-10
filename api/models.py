@@ -93,13 +93,3 @@ class StatusResponse(BaseModel):
     db_stops_count: Optional[int] = Field(None, description="Приблизна кількість зупинок у БД")
     db_trips_count: Optional[int] = Field(None, description="Приблизна кількість рейсів у БД")
     db_stop_times_count: Optional[int] = Field(None, description="Приблизна кількість записів часу зупинок у БД")
-
-class RouteBasicInfo(BaseModel):
-    """Скорочена інформація про маршрут для списків."""
-    model_config = common_config # Використовуємо спільну конфігурацію
-    id: str = Field(..., alias="_id")
-    route_id: str = Field(..., description="GTFS ID маршруту", example="992")
-    route_short_name: Optional[str] = Field(None, description="Короткий номер/назва", example="А39")
-    route_long_name: Optional[str] = Field(None, description="Повна назва", example="вул. Грінченка - Кривчиці")
-    route_color: Optional[str] = Field(None, description="Колір маршруту (HEX без #)", example="556b2f")
-    route_type: Optional[str] = Field(None, description="Тип маршруту (GTFS код)", example="3")
