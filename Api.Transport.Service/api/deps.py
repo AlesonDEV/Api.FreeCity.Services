@@ -1,5 +1,4 @@
 # api/deps.py
-from typing import AsyncGenerator
 import motor.motor_asyncio
 from fastapi import HTTPException, status
 

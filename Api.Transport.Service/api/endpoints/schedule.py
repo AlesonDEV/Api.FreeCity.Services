@@ -3,7 +3,7 @@ import logging
 from typing import List, Optional, Set
 from fastapi import APIRouter, Depends, HTTPException, Query, Path, status
 import motor.motor_asyncio
-from datetime import date, datetime, time, timedelta, timezone
+from datetime import date, datetime, time, timezone
 from pymongo import ASCENDING # Імпортуємо ASCENDING
 
 from api.models import DepartureInfo # Модель відповіді

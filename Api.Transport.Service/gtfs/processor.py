@@ -3,11 +3,10 @@ import logging
 import asyncio
 import time
 from datetime import datetime, timezone
-from typing import Optional
 
 # Імпортуємо необхідні функції та конфігурацію
 from core.config import (
-    GTFS_URL, MONGO_DB_NAME, META_COLLECTION,
+    GTFS_URL, META_COLLECTION,
     ROUTES_FILE, TRIPS_FILE, SHAPES_FILE, STOPS_FILE, STOP_TIMES_FILE,
     CALENDAR_FILE, CALENDAR_DATES_FILE,
     ROUTES_COLLECTION, SHAPES_COLLECTION, STOPS_COLLECTION, TRIPS_COLLECTION,

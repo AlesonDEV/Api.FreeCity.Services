@@ -4,9 +4,8 @@ import time # Додаємо імпорт time
 from typing import Dict, List, Optional, Any, AsyncGenerator
 import motor.motor_asyncio
 # Імпортуємо константи та типи з pymongo
-from pymongo import ReplaceOne, InsertOne, IndexModel, ASCENDING, DESCENDING, GEOSPHERE
+from pymongo import ReplaceOne, InsertOne, IndexModel, ASCENDING, GEOSPHERE
 from pymongo.errors import BulkWriteError
-
 # Імпортуємо імена колекцій з конфігурації
 from core.config import (
     STOPS_COLLECTION, TRIPS_COLLECTION, STOP_TIMES_COLLECTION, ROUTES_COLLECTION,

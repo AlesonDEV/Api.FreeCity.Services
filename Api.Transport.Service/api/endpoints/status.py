@@ -1,7 +1,7 @@
 # api/endpoints/status.py
 import asyncio
 import logging
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 import motor.motor_asyncio
 from datetime import datetime, timezone
 
@@ -9,8 +9,7 @@ from api.models import StatusResponse
 from api.deps import get_db_dependency
 from core.config import (
     ROUTES_COLLECTION, SHAPES_COLLECTION, STOPS_COLLECTION,
-    TRIPS_COLLECTION, STOP_TIMES_COLLECTION, META_COLLECTION, CALENDAR_COLLECTION,
-    CALENDAR_DATES_COLLECTION
+    TRIPS_COLLECTION, STOP_TIMES_COLLECTION, META_COLLECTION
 )
 # ЗМІНЕНО: Імпортуємо стан з core.state
 from core.state import app_state

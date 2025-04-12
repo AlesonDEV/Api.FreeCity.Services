@@ -5,7 +5,7 @@ services:
   # Сервіс FastAPI додатку
   api:
     build:
-      context: . # Вказує, що Dockerfile знаходиться в поточній директорії
+      context: .. # Вказує, що Dockerfile знаходиться в поточній директорії
       dockerfile: Dockerfile # Явно вказуємо ім'я Dockerfile
     container_name: gtfs-api-service
     # Прокидаємо порт з контейнера на хост. Використовуємо змінну з .env або значення за замовчуванням
