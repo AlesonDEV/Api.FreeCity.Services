@@ -1,0 +1,34 @@
+# docker-compose.yml
+version: '3.8' # Версія синтаксису docker-compose
+
+services:
+  # Сервіс FastAPI додатку
+  api:
+    build:
+      context: . # Вказує, що Dockerfile знаходиться в поточній директорії
+      dockerfile: Dockerfile # Явно вказуємо ім'я Dockerfile
+    container_name: gtfs-api-service
+    # Прокидаємо порт з контейнера на хост. Використовуємо змінну з .env або значення за замовчуванням
+    ports:
+      - "${APP_PORT:-8000}:8000" # Порт всередині контейнера завжди 8000 (згідно Dockerfile CMD)
+    # Секція environment використовує змінні, завантажені з .env файлу хоста
+    # Якщо змінної немає в .env або середовищі хоста, буде використано значення за замовчуванням з core/config.py
+    environment:
+      # === Найкращий спосіб передати рядок підключення ===
+      # Беремо значення з .env файлу (який не в Git)
+      - MONGO_CONNECTION_STRING=${MONGO_CONNECTION_STRING}
+      # ======================================================
+      - MONGO_DB_NAME=${MONGO_DB_NAME:-gtfs_lviv} # Беремо з .env або дефолтне
+      - GTFS_URL=${GTFS_URL}
+      - UPDATE_INTERVAL_SECONDS=${UPDATE_INTERVAL_SECONDS:-604800}
+      - APP_TIMEZONE=${APP_TIMEZONE:-Europe/Kiev}
+      - APP_PORT=8000 # Вказуємо порт, який слухає Uvicorn всередині контейнера
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000,http://localhost:5173}
+      # Можна додати інші змінні, які використовує config.py
+      # - LOG_LEVEL=${LOG_LEVEL:-INFO}
+
+    # Мережа не потрібна, оскільки MongoDB зовнішня
+    # restart: unless-stopped # Політика перезапуску контейнера (опціонально)
+
+# Не визначаємо сервіс mongo, оскільки база даних зовнішня
+# Не визначаємо volumes чи networks (якщо не потрібні для інших цілей)
